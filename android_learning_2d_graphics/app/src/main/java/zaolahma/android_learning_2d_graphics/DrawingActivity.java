@@ -12,6 +12,7 @@ import android.view.View;
 public class DrawingActivity extends View {
     private Paint paint;
     private RectF figBounds;
+    private RectF gravBounds;
     private int screenHeight;
     private int screenWidth;
     private float figRadius;
@@ -27,6 +28,7 @@ public class DrawingActivity extends View {
         paint.setTypeface(Typeface.MONOSPACE);
         paint.setTextSize(40);
         figBounds = new RectF();
+        gravBounds = new RectF();
         figRadius = 50;
         screenHeight = 0;
         screenWidth = 0;
@@ -48,6 +50,13 @@ public class DrawingActivity extends View {
 
         canvas.drawOval(figBounds, paint);
 
+        gravBounds.set(screenWidth / 2 - 50, screenHeight / 2 - 50,
+                       screenWidth / 2 + 50, screenHeight / 2 + 50);
+
+        paint.setColor(Color.RED);
+
+        canvas.drawOval(gravBounds, paint);
+
         paint.setColor(Color.BLACK);
         canvas.drawText(text.toString(), 10, 30, paint);
 
@@ -61,18 +70,23 @@ public class DrawingActivity extends View {
     void update() {
         figX += deltaX;
 
-        if(figX - figRadius < 1 || figX + figRadius > screenWidth - 1) {
-            deltaX = -deltaX;
-        }
-
         float acceleration = 9.82f;
+
+        if(figY > screenHeight / 2) {
+            acceleration = -acceleration;
+        }
 
         deltaY += acceleration * 0.1;
 
-        if(figY + figRadius > screenHeight - 1) {
-            deltaX = 0;
-            deltaY = 0;
+        acceleration = 9.82f;
+
+        if(figX > screenWidth / 2) {
+            acceleration = - acceleration;
         }
+
+        deltaX += acceleration * 0.1;
+
+        figX += deltaX;
         figY += deltaY;
     }
 
