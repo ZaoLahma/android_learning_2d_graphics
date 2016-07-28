@@ -17,6 +17,8 @@ public class DrawingActivity extends View {
     private float figRadius;
     private float figX;
     private float figY;
+    private float deltaX;
+    private float deltaY;
     private String text;
 
     public DrawingActivity(Context context) {
@@ -30,11 +32,15 @@ public class DrawingActivity extends View {
         screenWidth = 0;
         figX = 50;
         figY = 50;
+        deltaX = 0;
+        deltaY = 0;
         text = new String("2D graphics in Android");
         this.setFocusableInTouchMode(true);
     }
 
     protected void onDraw(Canvas canvas) {
+        update();
+
         figBounds.set(figX - figRadius, figY - figRadius,
                       figX + figRadius, figY + figRadius);
 
@@ -46,15 +52,43 @@ public class DrawingActivity extends View {
         canvas.drawText(text.toString(), 10, 30, paint);
 
         try {
-            Thread.sleep(30);
+            Thread.sleep(100);
         } catch(InterruptedException e) {}
 
         invalidate();
     }
 
+    void update() {
+        figX += deltaX;
+
+        if(figX - figRadius < 1 || figX + figRadius > screenWidth - 1) {
+            deltaX = -deltaX;
+        }
+
+        float acceleration = 9.82f;
+
+        deltaY += acceleration * 0.1;
+
+        if(figY + figRadius > screenHeight - 1) {
+            deltaX = 0;
+            deltaY = 0;
+        }
+        figY += deltaY;
+    }
+
     public boolean onTouchEvent (MotionEvent event) {
-        figX = event.getX();
-        figY = event.getY();
+        deltaX = 0;
+        deltaY = 0;
+
+        switch(event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                figX = event.getX();
+                figY = event.getY();
+                break;
+            case MotionEvent.ACTION_UP:
+                deltaX -= (figX - event.getX()) / 10;
+                break;
+        }
 
         System.out.println("onTouchEvent called (" + figX + ", " + figY + ")");
 
