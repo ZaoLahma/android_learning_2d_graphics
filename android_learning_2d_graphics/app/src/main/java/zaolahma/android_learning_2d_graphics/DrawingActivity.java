@@ -68,7 +68,6 @@ public class DrawingActivity extends View {
 
         if(userInteracting) {
             paint.setColor(Color.GREEN);
-            System.out.println("arrowX: " + arrowX + " arrowY: " + arrowY);
             canvas.drawLine(figX, figY, arrowX, arrowY, paint);
         }
 
