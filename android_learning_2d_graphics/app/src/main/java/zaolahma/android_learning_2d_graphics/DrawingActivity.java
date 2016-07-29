@@ -61,33 +61,20 @@ public class DrawingActivity extends View {
         canvas.drawText(text.toString(), 10, 30, paint);
 
         try {
-            Thread.sleep(100);
+            Thread.sleep(30);
         } catch(InterruptedException e) {}
 
         invalidate();
     }
 
     void update() {
-        figX += deltaX;
+        double angle = Math.atan2((figY - screenHeight / 2), (figX - screenWidth / 2));
 
-        float acceleration = 9.82f;
+        deltaX -= (float) (Math.cos(angle) * 9.82);
+        deltaY -= (float) (Math.sin(angle) * 9.82);
 
-        if(figY > screenHeight / 2) {
-            acceleration = -acceleration;
-        }
-
-        deltaY += acceleration * 0.1;
-
-        acceleration = 9.82f;
-
-        if(figX > screenWidth / 2) {
-            acceleration = - acceleration;
-        }
-
-        deltaX += acceleration * 0.1;
-
-        figX += deltaX;
-        figY += deltaY;
+        figY += deltaY / 5;
+        figX += deltaX / 5;
     }
 
     public boolean onTouchEvent (MotionEvent event) {
@@ -100,7 +87,8 @@ public class DrawingActivity extends View {
                 figY = event.getY();
                 break;
             case MotionEvent.ACTION_UP:
-                deltaX -= (figX - event.getX()) / 10;
+                deltaX += (figX - event.getX());
+                deltaY += (figY - event.getY());
                 break;
         }
 
