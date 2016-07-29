@@ -21,6 +21,9 @@ public class DrawingActivity extends View {
     private float deltaX;
     private float deltaY;
     private String text;
+    private boolean userInteracting;
+    private float arrowX;
+    private float arrowY;
 
     public DrawingActivity(Context context) {
         super(context);
@@ -38,6 +41,9 @@ public class DrawingActivity extends View {
         deltaY = 0;
         text = new String("2D graphics in Android");
         this.setFocusableInTouchMode(true);
+        userInteracting = false;
+        arrowX = 0;
+        arrowY = 0;
     }
 
     protected void onDraw(Canvas canvas) {
@@ -60,6 +66,12 @@ public class DrawingActivity extends View {
         paint.setColor(Color.BLACK);
         canvas.drawText(text.toString(), 10, 30, paint);
 
+        if(userInteracting) {
+            paint.setColor(Color.GREEN);
+            System.out.println("arrowX: " + arrowX + " arrowY: " + arrowY);
+            canvas.drawLine(figX, figY, arrowX, arrowY, paint);
+        }
+
         try {
             Thread.sleep(30);
         } catch(InterruptedException e) {}
@@ -68,6 +80,9 @@ public class DrawingActivity extends View {
     }
 
     void update() {
+        if(userInteracting) {
+            return;
+        }
         double angle = Math.atan2((figY - screenHeight / 2), (figX - screenWidth / 2));
 
         deltaX -= (float) (Math.cos(angle) * 9.82);
@@ -81,18 +96,28 @@ public class DrawingActivity extends View {
         deltaX = 0;
         deltaY = 0;
 
+        userInteracting = true;
+
         switch(event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 figX = event.getX();
                 figY = event.getY();
                 break;
+            case MotionEvent.ACTION_MOVE:
+                float distX = event.getX() - figX;
+                float distY = event.getY() - figY;
+
+                arrowX = figX - distX;
+                arrowY = figY - distY;
+                break;
             case MotionEvent.ACTION_UP:
                 deltaX += (figX - event.getX());
                 deltaY += (figY - event.getY());
+                userInteracting = false;
                 break;
         }
 
-        System.out.println("onTouchEvent called (" + figX + ", " + figY + ")");
+        //System.out.println("onTouchEvent called (" + figX + ", " + figY + ")");
 
         return true;
     }
