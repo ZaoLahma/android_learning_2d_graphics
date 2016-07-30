@@ -24,6 +24,7 @@ public class DrawingActivity extends View {
     private boolean userInteracting;
     private float arrowX;
     private float arrowY;
+    private float movingAngle;
 
     public DrawingActivity(Context context) {
         super(context);
@@ -44,6 +45,7 @@ public class DrawingActivity extends View {
         userInteracting = false;
         arrowX = 0;
         arrowY = 0;
+        movingAngle = 0;
     }
 
     protected void onDraw(Canvas canvas) {
@@ -62,6 +64,15 @@ public class DrawingActivity extends View {
         paint.setColor(Color.RED);
 
         canvas.drawOval(gravBounds, paint);
+
+
+        gravBounds.set(screenWidth / 2 - 30, screenHeight / 4 - 30,
+                       screenWidth / 2 + 30, screenHeight / 4 + 30);
+
+        paint.setColor(Color.RED);
+
+        canvas.drawOval(gravBounds, paint);
+
 
         paint.setColor(Color.BLACK);
         canvas.drawText(text.toString(), 10, 30, paint);
@@ -87,8 +98,16 @@ public class DrawingActivity extends View {
         deltaX -= (float) (Math.cos(angle) * 9.82);
         deltaY -= (float) (Math.sin(angle) * 9.82);
 
+
+        angle = Math.atan2((figY - screenHeight / 4), (figX - screenWidth / 2));
+
+        deltaX -= (float) (Math.cos(angle) * 4);
+        deltaY -= (float) (Math.sin(angle) * 4);
+
         figY += deltaY / 5;
         figX += deltaX / 5;
+
+        movingAngle += 1;
     }
 
     public boolean onTouchEvent (MotionEvent event) {
